@@ -13,6 +13,12 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+@router.get("/public", response_model=List[schemas.ProductResponse])
+def get_public_inventory(db: Session = Depends(get_db)):
+    # Returns all products publicly for the e-commerce storefront
+    products = db.query(models.Product).all()
+    return products
+
 @router.get("/", response_model=List[schemas.ProductResponse])
 def get_inventory(
     db: Session = Depends(get_db), 
