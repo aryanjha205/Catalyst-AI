@@ -32,6 +32,7 @@ def initialize_database() -> bool:
         if engine.dialect.name == "postgresql":
             with engine.begin() as connection:
                 connection.execute(text("ALTER TABLE companies ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE"))
+                connection.execute(text("ALTER TABLE companies ADD COLUMN IF NOT EXISTS is_approved BOOLEAN NOT NULL DEFAULT FALSE"))
         return True
     except Exception:
         # Do not make the ASGI application unavailable merely because Neon is temporarily unreachable.
