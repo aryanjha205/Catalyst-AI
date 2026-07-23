@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Approval - Catalyst AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#00e676">
+    <style>
+        body { justify-content: center; align-items: center; background-color: var(--sidebar-bg); }
+        .auth-container {
+            background: var(--bg-color);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .auth-container h2 { color: var(--secondary-color); margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input { 
+            width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+            border-radius: 6px; font-family: var(--font-family);
+        }
+        .btn {
+            background: var(--secondary-color); color: #fff; border: none;
+            padding: 12px; width: 100%; border-radius: 6px; cursor: pointer;
+            font-size: 1rem; font-weight: 600; transition: var(--transition);
+        }
+        .btn:hover { background: #55b800; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <i class="fa-solid fa-user-shield" style="color: var(--danger); font-size: 3rem; margin-bottom: 10px;"></i>
+        <h2 style="color: var(--danger);">System Approval</h2>
+        <p style="margin-bottom: 20px; font-size: 0.9rem; color: var(--text-light);">
+            Requires Super Admin PIN to approve a new company registration.
+        </p>
+        <form id="approvalForm">
+            <div class="form-group">
+                <label>Company Code</label>
+                <input type="text" id="company_code" placeholder="e.g. CHEM-X8A7K3" required>
+            </div>
+            <div class="form-group">
+                <label>Super Admin PIN</label>
+                <input type="password" id="pin" placeholder="Enter PIN" required>
+            </div>
+            <button type="submit" class="btn" style="background-color: var(--danger);">Approve Company</button>
+        </form>
+        <div style="margin-top: 15px;">
+            <a href="/login" style="color: var(--primary-color); font-size: 0.9rem; text-decoration: none;">Back to Login</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('approvalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const company_code = document.getElementById('company_code').value;
+            const pin = document.getElementById('pin').value;
+
+            try {
+                const response = await fetch('/api/approve_company', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ company_code, pin })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Success: ' + data.message);
+                    window.location.href = '/login';
+                } else {
+                    alert('Error: ' + data.detail);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Approval request failed');
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
