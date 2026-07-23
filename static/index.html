@@ -44,6 +44,9 @@
             <a href="#sales" class="nav-item" data-target="sales">
                 <i class="fa-solid fa-briefcase"></i> <span>Sales & CRM</span>
             </a>
+            <a href="#procurement" class="nav-item" data-target="procurement">
+                <i class="fa-solid fa-cart-flatbed"></i> <span>Procurement</span>
+            </a>
             <a href="#finance" class="nav-item" data-target="finance">
                 <i class="fa-solid fa-file-invoice-dollar"></i> <span>Finance</span>
             </a>
@@ -99,7 +102,10 @@
             <h3>Add New Product / Chemical</h3>
             <form id="formStock" method="dialog">
                 <input type="text" id="stock_code" placeholder="Product Code (e.g. ETH-001)" required>
-                <input type="text" id="stock_name" placeholder="Chemical Name (e.g. Ethanol)" required>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <input type="text" id="stock_name" placeholder="Chemical Name (e.g. Ethanol)" required style="flex:1;">
+                    <button type="button" class="btn btn-primary" id="btnStockAISuggest" style="padding:10px 14px; border-radius:10px; white-space:nowrap;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Suggest</button>
+                </div>
                 <input type="text" id="stock_cas" placeholder="CAS Number (e.g. 64-17-5)">
                 <select id="stock_category">
                     <option value="Raw Material">Raw Material</option>
@@ -247,6 +253,36 @@
             </form>
         </div>
     </dialog>
+
+    <dialog id="dialogSupplier">
+        <div class="modal-content">
+            <h3>Onboard New Supplier</h3>
+            <form id="formSupplier" method="dialog">
+                <input type="text" id="sup_name" placeholder="Supplier Name" required>
+                <input type="email" id="sup_email" placeholder="Business Email" required>
+                <input type="number" id="sup_score" placeholder="Performance Score (1-5)" min="1" max="5" value="5">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Onboard</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogPurchaseOrder">
+        <div class="modal-content">
+            <h3>Create Purchase Order (PO)</h3>
+            <form id="formPurchaseOrder" method="dialog">
+                <input type="text" id="po_supplier_id" placeholder="Supplier ID" required>
+                <input type="number" id="po_amount" placeholder="Total PO Value ($)" required step="any">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Create PO</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
 
     <!-- Floating AI Command Center Chat widget -->
     <div class="ai-assistant-container" id="aiAssistantContainer">

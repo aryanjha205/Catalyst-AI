@@ -345,4 +345,16 @@ class StockTransferCreate(BaseModel):
     from_bin_id: str
     to_bin_id: str
 
+class ChemicalSuggestRequest(BaseModel):
+    name: str
+
+class ChemicalSuggestResponse(BaseModel):
+    chemical_name: str
+    cas_number: Optional[str] = None
+    molecular_formula: Optional[str] = None
+    molecular_weight: Optional[float] = None
+    hazard_class: Optional[str] = None
+    density: Optional[str] = None
+
+
 
