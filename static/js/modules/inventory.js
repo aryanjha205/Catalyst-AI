@@ -44,58 +44,6 @@ export async function render() {
             </div>
         </div>
 
-        <!-- 3D CSS Drums Interactive Display -->
-        <div class="drum-display-section">
-            <div class="drum-controls">
-                <div>
-                    <h3>3D Chemical Storage Visualization</h3>
-                </div>
-            </div>
-
-            <div class="drums-container">
-                <!-- Drum 1: Flammable -->
-                <div class="chemical-drum drum-flammable" id="drum-0" data-index="0">
-                    <div class="drum-top"></div>
-                    <div class="drum-body">
-                        <div class="drum-band drum-band-1"></div>
-                        <div class="hazard-diamond">
-                            <i class="fa-solid fa-fire"></i>
-                        </div>
-                        <div class="drum-label" id="label-drum-0">No Chemical Projected</div>
-                        <div class="drum-band drum-band-2"></div>
-                    </div>
-                    <div class="drum-bottom"></div>
-                </div>
-
-                <!-- Drum 2: Toxic -->
-                <div class="chemical-drum drum-toxic" id="drum-1" data-index="1">
-                    <div class="drum-top"></div>
-                    <div class="drum-body">
-                        <div class="drum-band drum-band-1"></div>
-                        <div class="hazard-diamond">
-                            <i class="fa-solid fa-skull-crossbones"></i>
-                        </div>
-                        <div class="drum-label" id="label-drum-1">No Chemical Projected</div>
-                        <div class="drum-band drum-band-2"></div>
-                    </div>
-                    <div class="drum-bottom"></div>
-                </div>
-
-                <!-- Drum 3: Safe -->
-                <div class="chemical-drum drum-safe" id="drum-2" data-index="2">
-                    <div class="drum-top"></div>
-                    <div class="drum-body">
-                        <div class="drum-band drum-band-1"></div>
-                        <div class="hazard-diamond">
-                            <i class="fa-solid fa-leaf"></i>
-                        </div>
-                        <div class="drum-label" id="label-drum-2">No Chemical Projected</div>
-                        <div class="drum-band drum-band-2"></div>
-                    </div>
-                    <div class="drum-bottom"></div>
-                </div>
-            </div>
-        </div>
     `;
     return container;
 }
