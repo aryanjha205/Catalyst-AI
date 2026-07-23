@@ -47,6 +47,47 @@ export async function render() {
 
 export async function afterRender() {
     const tableBody = document.querySelector('#inventoryTable tbody');
+    const addStockBtn = document.getElementById('addStockBtn');
+    const dialogStock = document.getElementById('dialogStock');
+    const formStock = document.getElementById('formStock');
+
+    if (addStockBtn && dialogStock) {
+        addStockBtn.addEventListener('click', () => {
+            dialogStock.showModal();
+        });
+    }
+
+    if (formStock) {
+        formStock.onsubmit = async (e) => {
+            const payload = {
+                product_code: document.getElementById('stock_code').value,
+                chemical_name: document.getElementById('stock_name').value,
+                cas_number: document.getElementById('stock_cas').value || null,
+                category: document.getElementById('stock_category').value,
+                current_stock: parseFloat(document.getElementById('stock_qty').value || 0),
+                safety_stock: parseFloat(document.getElementById('stock_safety').value || 0),
+                reorder_level: parseFloat(document.getElementById('stock_reorder').value || 0),
+                hazard_class: document.getElementById('stock_hazard').value || null
+            };
+
+            try {
+                const res = await fetch('/api/inventory/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('Failed to save product');
+                dialogStock.close();
+                await afterRender();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+    }
+
     try {
         const token = localStorage.getItem('access_token');
         const res = await fetch('/api/inventory', {
@@ -68,11 +109,11 @@ export async function afterRender() {
             <tr>
                 <td><strong>${item.product_code}</strong></td>
                 <td>${item.chemical_name}</td>
-                <td><span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-family: monospace;">${item.cas_number || 'N/A'}</span></td>
+                <td><span style="background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px; font-family: monospace;">${item.cas_number || 'N/A'}</span></td>
                 <td>
                     <div style="display:flex; align-items:center; gap: 10px;">
-                        <div style="flex:1; height: 6px; background: rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;">
-                            <div style="width: ${Math.min(item.current_stock / 1000 * 100, 100)}%; height: 100%; background: var(--secondary-color);"></div>
+                        <div style="flex:1; height: 6px; background: rgba(0,0,0,0.05); border-radius:3px; overflow:hidden;">
+                            <div style="width: ${Math.min((item.current_stock / (item.safety_stock || 1000)) * 100, 100)}%; height: 100%; background: var(--secondary-color);"></div>
                         </div>
                         <span style="font-weight:600; min-width: 50px;">${item.current_stock}</span>
                     </div>
@@ -87,5 +128,6 @@ export async function afterRender() {
 }
 
 export function cleanup() {
-    // Cleanup if needed
+    // Cleanup
 }
+

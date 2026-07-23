@@ -13,18 +13,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# Minimal Schema for response
-class ProductResponse(BaseModel):
-    id: str
-    product_code: str
-    chemical_name: str
-    cas_number: str | None = None
-    current_stock: float
-
-    class Config:
-        from_attributes = True
-
-@router.get("/", response_model=List[ProductResponse])
+@router.get("/", response_model=List[schemas.ProductResponse])
 def get_inventory(
     db: Session = Depends(get_db), 
     current_user: models.User = Depends(auth.get_current_user)
@@ -35,7 +24,7 @@ def get_inventory(
     ).all()
     return products
 
-@router.post("/", response_model=ProductResponse)
+@router.post("/", response_model=schemas.ProductResponse)
 def create_product(
     product_data: schemas.ProductCreate,
     db: Session = Depends(get_db), 
@@ -50,3 +39,4 @@ def create_product(
     db.commit()
     db.refresh(new_product)
     return new_product
+

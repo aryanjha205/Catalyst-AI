@@ -304,3 +304,34 @@ class AuditLog(Base):
     entity = Column(String)
     details = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+# 17. Formulas & Recipes
+class Formula(Base):
+    __tablename__ = "formulas"
+    id = Column(String, primary_key=True, default=generate_uuid)
+    company_id = Column(String, ForeignKey("companies.id"), nullable=False, index=True)
+    product_id = Column(String, ForeignKey("products.id"), nullable=False)
+    name = Column(String)
+    version = Column(String, default="1.0.0")
+    mixing_sequence = Column(Text)
+    process_parameters = Column(Text)
+    is_approved = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class FormulaIngredient(Base):
+    __tablename__ = "formula_ingredients"
+    id = Column(String, primary_key=True, default=generate_uuid)
+    formula_id = Column(String, ForeignKey("formulas.id"), nullable=False)
+    ingredient_product_id = Column(String, ForeignKey("products.id"), nullable=False)
+    percentage = Column(Float)
+
+# 18. Plants & Equipment
+class Machine(Base):
+    __tablename__ = "machines"
+    id = Column(String, primary_key=True, default=generate_uuid)
+    company_id = Column(String, ForeignKey("companies.id"), nullable=False, index=True)
+    name = Column(String)
+    status = Column(String)
+    last_maintenance = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+

@@ -29,6 +29,9 @@
             <a href="#inventory" class="nav-item" data-target="inventory">
                 <i class="fa-solid fa-boxes-stacked"></i> <span>Inventory</span>
             </a>
+            <a href="#warehouse" class="nav-item" data-target="warehouse">
+                <i class="fa-solid fa-warehouse"></i> <span>Warehouse</span>
+            </a>
             <a href="#production" class="nav-item" data-target="production">
                 <i class="fa-solid fa-industry"></i> <span>Production</span>
             </a>
@@ -88,6 +91,198 @@
             localStorage.removeItem('refresh_token');
             window.location.href = '/login';
         });
+    </script>
+
+    <!-- Dialog Modals for ERP Actions -->
+    <dialog id="dialogStock">
+        <div class="modal-content">
+            <h3>Add New Product / Chemical</h3>
+            <form id="formStock" method="dialog">
+                <input type="text" id="stock_code" placeholder="Product Code (e.g. ETH-001)" required>
+                <input type="text" id="stock_name" placeholder="Chemical Name (e.g. Ethanol)" required>
+                <input type="text" id="stock_cas" placeholder="CAS Number (e.g. 64-17-5)">
+                <select id="stock_category">
+                    <option value="Raw Material">Raw Material</option>
+                    <option value="Finished Product">Finished Product</option>
+                    <option value="Semi-Finished Product">Semi-Finished Product</option>
+                    <option value="Packaging Material">Packaging Material</option>
+                    <option value="Consumable">Consumable</option>
+                    <option value="Laboratory Chemical">Laboratory Chemical</option>
+                </select>
+                <input type="number" id="stock_qty" placeholder="Current Stock" step="any" value="0">
+                <input type="number" id="stock_safety" placeholder="Safety Stock" step="any" value="0">
+                <input type="number" id="stock_reorder" placeholder="Reorder Level" step="any" value="0">
+                <input type="text" id="stock_hazard" placeholder="Hazard Class (e.g. Flammable)">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogWarehouse">
+        <div class="modal-content">
+            <h3>Add Warehouse Bin / Zone</h3>
+            <form id="formWarehouse" method="dialog">
+                <select id="wh_type" onchange="toggleWhFields()">
+                    <option value="warehouse">Warehouse</option>
+                    <option value="zone">Zone</option>
+                    <option value="rack">Rack</option>
+                    <option value="bin">Bin</option>
+                </select>
+                <input type="text" id="wh_name" placeholder="Name (e.g. Zone A, Bin 12)" required>
+                <div id="wh_parent_container">
+                    <input type="text" id="wh_parent_id" placeholder="Parent ID (Warehouse/Zone/Rack ID if applicable)">
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogFormula">
+        <div class="modal-content">
+            <h3>Create Formulation Recipe</h3>
+            <form id="formFormula" method="dialog">
+                <input type="text" id="formula_product_id" placeholder="Finished Product ID" required>
+                <input type="text" id="formula_name" placeholder="Recipe Name" required>
+                <input type="text" id="formula_version" placeholder="Version (e.g. 1.0.0)" value="1.0.0">
+                <textarea id="formula_sequence" placeholder="Mixing Sequence (Steps)" rows="3"></textarea>
+                <input type="text" id="formula_params" placeholder="Process Parameters (Temp/Pressure)">
+                
+                <div style="margin: 10px 0;">
+                    <label>Ingredients list (JSON format e.g. [{"ingredient_product_id":"ID","percentage":100}]):</label>
+                    <textarea id="formula_ingredients_json" placeholder='[{"ingredient_product_id":"ID","percentage":100.0}]' rows="3" required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogProduction">
+        <div class="modal-content">
+            <h3>Plan Production Batch Order</h3>
+            <form id="formProduction" method="dialog">
+                <input type="text" id="prod_product_id" placeholder="Finished Product ID" required>
+                <input type="number" id="prod_qty" placeholder="Quantity Planned" required step="any">
+                <input type="text" id="prod_batch" placeholder="Batch Code (Optional)">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Schedule</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogLims">
+        <div class="modal-content">
+            <h3>Register Laboratory Test Sample</h3>
+            <form id="formLims" method="dialog">
+                <input type="text" id="lims_sample" placeholder="Sample ID / Batch Number" required>
+                <select id="lims_test_type">
+                    <option value="pH">pH Testing</option>
+                    <option value="Density">Density Testing</option>
+                    <option value="Purity">Purity Analysis</option>
+                    <option value="Moisture">Moisture Content</option>
+                    <option value="Viscosity">Viscosity Check</option>
+                </select>
+                <input type="text" id="lims_result" placeholder="Result Value (optional initially)">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogCustomer">
+        <div class="modal-content">
+            <h3>Add New CRM Customer</h3>
+            <form id="formCustomer" method="dialog">
+                <input type="text" id="cust_name" placeholder="Customer Name" required>
+                <input type="email" id="cust_email" placeholder="Business Email" required>
+                <input type="number" id="cust_credit" placeholder="Credit Limit ($)" step="any" value="5000">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Onboard</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogSalesOrder">
+        <div class="modal-content">
+            <h3>Book Sales Order</h3>
+            <form id="formSalesOrder" method="dialog">
+                <input type="text" id="so_customer_id" placeholder="Customer ID" required>
+                <input type="number" id="so_amount" placeholder="Total Order Value ($)" required step="any">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Book Order</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogFinance">
+        <div class="modal-content">
+            <h3>Post Manual Ledger Entry</h3>
+            <form id="formFinance" method="dialog">
+                <input type="text" id="fin_account" placeholder="Account Name (e.g. Cash, Supplies)" required>
+                <select id="fin_type">
+                    <option value="Debit">Debit</option>
+                    <option value="Credit">Credit</option>
+                </select>
+                <input type="number" id="fin_amount" placeholder="Transaction Amount ($)" required step="any">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Post Entry</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Floating AI Command Center Chat widget -->
+    <div class="ai-assistant-container" id="aiAssistantContainer">
+        <div class="ai-assistant-header">
+            <h4><i class="fa-solid fa-robot"></i> ChemERP AI Assistant</h4>
+            <button class="ai-assistant-close" onclick="toggleAIAssistant()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="ai-assistant-chat" id="aiAssistantChat">
+            <div class="chat-bubble bot">Hello! How can I assist you in running the plant today? Try typing 'go to inventory' or 'check production'.</div>
+        </div>
+        <div class="ai-assistant-input">
+            <input type="text" id="aiInput" placeholder="Ask AI / Issue Voice Command...">
+            <button id="aiVoiceBtn" title="Voice Input"><i class="fa-solid fa-microphone"></i></button>
+            <button id="aiSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        function toggleWhFields() {
+            const val = document.getElementById('wh_type').value;
+            const container = document.getElementById('wh_parent_container');
+            const parentInput = document.getElementById('wh_parent_id');
+            if (val === 'warehouse') {
+                container.style.display = 'none';
+                parentInput.required = false;
+            } else {
+                container.style.display = 'block';
+                parentInput.required = true;
+                parentInput.placeholder = `Parent ${val === 'zone' ? 'Warehouse' : val === 'rack' ? 'Zone' : 'Rack'} ID`;
+            }
+        }
+        function toggleAIAssistant() {
+            const assistant = document.getElementById('aiAssistantContainer');
+            assistant.classList.toggle('active');
+        }
+        document.getElementById('aiCommandBtn').addEventListener('click', toggleAIAssistant);
     </script>
 </body>
 </html>

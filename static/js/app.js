@@ -1,4 +1,5 @@
 // Core Application Router and State Manager
+import { initAIAssistant } from './modules/ai.js';
 
 const App = {
     rootElement: document.getElementById('app-root'),
@@ -8,6 +9,7 @@ const App = {
         this.setupNavigation();
         this.checkAuth();
         this.handleRoute();
+        initAIAssistant();
 
         window.addEventListener('hashchange', () => this.handleRoute());
         
