@@ -126,7 +126,7 @@ async function loadDashboardData() {
 
         const resFin = await fetch('/api/finance/summary', { headers: authH });
         const fin = await resFin.json();
-        document.getElementById('kpiIncome').textContent = `$${fin.net_income.toFixed(2)}`;
+        document.getElementById('kpiIncome').textContent = `₹${fin.net_income.toFixed(2)}`;
 
         const resAudit = await fetch('/api/admin/', { headers: authH });
         const logs = await resAudit.json();

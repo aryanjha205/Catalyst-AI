@@ -134,7 +134,7 @@ export async function afterRender() {
             <tr>
                 <td><strong>${c.name}</strong><br><small style="color:var(--text-muted);">ID: <code>${c.id}</code></small></td>
                 <td>${c.email}</td>
-                <td>$${c.credit_limit}</td>
+                <td>₹${c.credit_limit}</td>
             </tr>
         `).join('') : '<tr><td colspan="3" style="text-align:center;">No customers onboarded.</td></tr>';
 
@@ -144,7 +144,7 @@ export async function afterRender() {
             <tr>
                 <td><code>${o.id.slice(0, 8)}</code></td>
                 <td><code>${o.customer_id.slice(0, 8)}</code></td>
-                <td>$${o.total_amount}</td>
+                <td>₹${o.total_amount}</td>
                 <td><span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:600;">${o.status}</span></td>
             </tr>
         `).join('') : '<tr><td colspan="4" style="text-align:center;">No sales orders booked.</td></tr>';

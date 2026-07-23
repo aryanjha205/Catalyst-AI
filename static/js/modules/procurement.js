@@ -144,7 +144,7 @@ export async function afterRender() {
             <tr>
                 <td><code>${p.id.slice(0, 8)}</code></td>
                 <td><code>${p.supplier_id.slice(0, 8)}</code></td>
-                <td>$${p.total_amount}</td>
+                <td>₹${p.total_amount}</td>
                 <td><span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:600;">${p.status}</span></td>
             </tr>
         `).join('') : '<tr><td colspan="4" style="text-align:center;">No purchase orders generated.</td></tr>';

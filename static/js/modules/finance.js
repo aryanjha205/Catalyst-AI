@@ -16,15 +16,15 @@ export async function render() {
         <section class="grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; margin-bottom:24px;">
             <article class="metric" style="background:#ffffff; border:1px solid var(--border-color); border-radius:14px; padding:20px;">
                 <span style="color:var(--text-muted); font-size:14px;">Total Debits</span>
-                <strong id="totalDebits" style="display:block; margin-top:7px; font-size:32px;">$0.00</strong>
+                <strong id="totalDebits" style="display:block; margin-top:7px; font-size:32px;">₹0.00</strong>
             </article>
             <article class="metric" style="background:#ffffff; border:1px solid var(--border-color); border-radius:14px; padding:20px;">
                 <span style="color:var(--text-muted); font-size:14px;">Total Credits</span>
-                <strong id="totalCredits" style="display:block; margin-top:7px; font-size:32px;">$0.00</strong>
+                <strong id="totalCredits" style="display:block; margin-top:7px; font-size:32px;">₹0.00</strong>
             </article>
             <article class="metric" style="background:#ffffff; border:1px solid var(--border-color); border-radius:14px; padding:20px;">
                 <span style="color:var(--text-muted); font-size:14px;">Net Income / Surplus</span>
-                <strong id="netIncome" style="display:block; margin-top:7px; font-size:32px;">$0.00</strong>
+                <strong id="netIncome" style="display:block; margin-top:7px; font-size:32px;">₹0.00</strong>
             </article>
         </section>
 
@@ -132,9 +132,9 @@ export async function afterRender() {
         const resSum = await fetch('/api/finance/summary', { headers: authH });
         const summary = await resSum.json();
         
-        document.getElementById('totalDebits').textContent = `$${summary.total_debits.toFixed(2)}`;
-        document.getElementById('totalCredits').textContent = `$${summary.total_credits.toFixed(2)}`;
-        document.getElementById('netIncome').textContent = `$${summary.net_income.toFixed(2)}`;
+        document.getElementById('totalDebits').textContent = `₹${summary.total_debits.toFixed(2)}`;
+        document.getElementById('totalCredits').textContent = `₹${summary.total_credits.toFixed(2)}`;
+        document.getElementById('netIncome').textContent = `₹${summary.net_income.toFixed(2)}`;
         if (summary.net_income < 0) {
             document.getElementById('netIncome').style.color = '#ca3f3f';
         } else {
@@ -148,7 +148,7 @@ export async function afterRender() {
                 <td>${new Date(l.created_at).toLocaleDateString()}</td>
                 <td><strong>${l.account_name}</strong></td>
                 <td><span style="color:${l.transaction_type === 'Debit' ? '#1e40af' : '#166534'}; font-weight:600;">${l.transaction_type}</span></td>
-                <td>$${l.amount.toFixed(2)}</td>
+                <td>₹${l.amount.toFixed(2)}</td>
             </tr>
         `).join('') : '<tr><td colspan="4" style="text-align:center;">No ledger transactions posted yet.</td></tr>';
 

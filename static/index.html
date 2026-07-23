@@ -279,7 +279,7 @@
             <form id="formCustomer" method="dialog">
                 <input type="text" id="cust_name" placeholder="Customer Name" required>
                 <input type="email" id="cust_email" placeholder="Business Email" required>
-                <input type="number" id="cust_credit" placeholder="Credit Limit ($)" step="any" value="5000">
+                <input type="number" id="cust_credit" placeholder="Credit Limit (₹)" step="any" value="5000">
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Onboard</button>
                     <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
@@ -293,7 +293,7 @@
             <h3>Book Sales Order</h3>
             <form id="formSalesOrder" method="dialog">
                 <input type="text" id="so_customer_id" placeholder="Customer ID" required>
-                <input type="number" id="so_amount" placeholder="Total Order Value ($)" required step="any">
+                <input type="number" id="so_amount" placeholder="Total Order Value (₹)" required step="any">
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Book Order</button>
                     <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
@@ -311,7 +311,7 @@
                     <option value="Debit">Debit</option>
                     <option value="Credit">Credit</option>
                 </select>
-                <input type="number" id="fin_amount" placeholder="Transaction Amount ($)" required step="any">
+                <input type="number" id="fin_amount" placeholder="Transaction Amount (₹)" required step="any">
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Post Entry</button>
                     <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
@@ -340,7 +340,7 @@
             <h3>Create Purchase Order (PO)</h3>
             <form id="formPurchaseOrder" method="dialog">
                 <input type="text" id="po_supplier_id" placeholder="Supplier ID" required>
-                <input type="number" id="po_amount" placeholder="Total PO Value ($)" required step="any">
+                <input type="number" id="po_amount" placeholder="Total PO Value (₹)" required step="any">
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Create PO</button>
                     <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
