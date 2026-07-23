@@ -49,15 +49,6 @@ export async function render() {
             <div class="drum-controls">
                 <div>
                     <h3>3D Chemical Storage Visualization</h3>
-                    <p style="margin: 0; font-size:0.9rem; color:var(--text-muted);">Click on a drum to select where to project the chemical name.</p>
-                </div>
-                <div>
-                    <label for="drumSelector" style="font-weight:600; margin-right:8px;">Project onto:</label>
-                    <select id="drumSelector" style="padding:6px 12px; border-radius:8px; border:1px solid var(--border-color);">
-                        <option value="0">Drum 1: Flammable (Red)</option>
-                        <option value="1">Drum 2: Toxic (Yellow)</option>
-                        <option value="2">Drum 3: Safe (Green)</option>
-                    </select>
                 </div>
             </div>
 
@@ -218,9 +209,18 @@ export async function afterRender() {
             updateDrumLabels();
         };
     }
+    
+    const stockNameInput = document.getElementById('stock_name');
+    if (stockNameInput) {
+        stockNameInput.addEventListener('input', (e) => {
+            selectedChemical = e.target.value || "No Name";
+            updateDrumLabels();
+        });
+    }
 
     document.querySelectorAll('.chemical-drum').forEach(drum => {
         drum.onclick = () => {
+            // Can still click if they want, but the main feature is in the add product dialog
             activeDrumIndex = parseInt(drum.getAttribute('data-index'));
             if (drumSelector) drumSelector.value = activeDrumIndex;
             updateDrumLabels();

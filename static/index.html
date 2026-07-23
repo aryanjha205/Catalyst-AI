@@ -119,6 +119,14 @@
                 <input type="number" id="stock_safety" placeholder="Safety Stock" step="any" value="0">
                 <input type="number" id="stock_reorder" placeholder="Reorder Level" step="any" value="0">
                 <input type="text" id="stock_hazard" placeholder="Hazard Class (e.g. Flammable)">
+                <div style="margin-top: 10px; margin-bottom: 15px;">
+                    <label for="drumSelector" style="font-weight:600; margin-right:8px; display:block; margin-bottom:5px;">Project onto Drum:</label>
+                    <select id="drumSelector" style="padding:6px 12px; border-radius:8px; border:1px solid var(--border-color); width: 100%;">
+                        <option value="0">Drum 1: Flammable (Red)</option>
+                        <option value="1">Drum 2: Toxic (Yellow)</option>
+                        <option value="2">Drum 3: Safe (Green)</option>
+                    </select>
+                </div>
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Save</button>
                     <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
