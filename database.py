@@ -20,7 +20,7 @@ try:
 except Exception as e:
     print(f"Failed to connect to database: {e}")
     # Fallback to sqlite for dev if db fails to connect
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+    SQLALCHEMY_DATABASE_URL = "sqlite:////tmp/sql_app.db"
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     )

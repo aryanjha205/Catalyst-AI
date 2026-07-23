@@ -34,13 +34,14 @@ app.include_router(ai.router)
 app.include_router(admin.router)
 
 # Mount static files (CSS, JS, Images, HTML)
-os.makedirs("static", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     try:
-        with open("static/index.html", "r", encoding="utf-8") as f:
+        with open(os.path.join(static_dir, "index.html"), "r", encoding="utf-8") as f:
             content = f.read()
         return HTMLResponse(content=content)
     except FileNotFoundError:
@@ -49,7 +50,7 @@ async def read_root():
 @app.get("/login", response_class=HTMLResponse)
 async def read_login():
     try:
-        with open("static/login.html", "r", encoding="utf-8") as f:
+        with open(os.path.join(static_dir, "login.html"), "r", encoding="utf-8") as f:
             content = f.read()
         return HTMLResponse(content=content)
     except FileNotFoundError:
@@ -58,7 +59,7 @@ async def read_login():
 @app.get("/register", response_class=HTMLResponse)
 async def read_register():
     try:
-        with open("static/register.html", "r", encoding="utf-8") as f:
+        with open(os.path.join(static_dir, "register.html"), "r", encoding="utf-8") as f:
             content = f.read()
         return HTMLResponse(content=content)
     except FileNotFoundError:
@@ -67,7 +68,7 @@ async def read_register():
 @app.get("/super_admin", response_class=HTMLResponse)
 async def read_super_admin():
     try:
-        with open("static/super_admin.html", "r", encoding="utf-8") as f:
+        with open(os.path.join(static_dir, "super_admin.html"), "r", encoding="utf-8") as f:
             content = f.read()
         return HTMLResponse(content=content)
     except FileNotFoundError:
