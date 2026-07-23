@@ -189,3 +189,82 @@ def transfer_stock(
     db.add(movement)
     db.commit()
     return {"message": "Stock transfer completed successfully"}
+
+@router.get("/stock", response_model=List[schemas.StockLocationResponse])
+def get_warehouse_stock(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    results = db.query(
+        models.ProductLocation, models.Product, models.WarehouseBin
+    ).join(
+        models.Product, models.ProductLocation.product_id == models.Product.id
+    ).join(
+        models.WarehouseBin, models.ProductLocation.bin_id == models.WarehouseBin.id
+    ).filter(
+        models.ProductLocation.company_id == current_user.company_id,
+        models.ProductLocation.quantity > 0
+    ).all()
+
+    response_data = []
+    for loc, prod, bin in results:
+        response_data.append({
+            "id": loc.id,
+            "product_id": loc.product_id,
+            "product_name": prod.chemical_name,
+            "product_code": prod.product_code,
+            "bin_id": loc.bin_id,
+            "bin_name": bin.name,
+            "quantity": loc.quantity,
+            "issue_date": loc.issue_date
+        })
+    return response_data
+
+@router.post("/store", response_model=schemas.StockLocationResponse)
+def store_stock(
+    store_data: schemas.StoreStockRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    bin = db.query(models.WarehouseBin).filter(
+        models.WarehouseBin.id == store_data.bin_id,
+        models.WarehouseBin.company_id == current_user.company_id
+    ).first()
+    product = db.query(models.Product).filter(
+        models.Product.id == store_data.product_id,
+        models.Product.company_id == current_user.company_id
+    ).first()
+
+    if not bin or not product:
+        raise HTTPException(status_code=404, detail="Product or Bin not found")
+
+    loc = db.query(models.ProductLocation).filter(
+        models.ProductLocation.product_id == product.id,
+        models.ProductLocation.bin_id == bin.id,
+        models.ProductLocation.company_id == current_user.company_id
+    ).first()
+
+    if loc:
+        loc.quantity += store_data.quantity
+    else:
+        loc = models.ProductLocation(
+            company_id=current_user.company_id,
+            product_id=product.id,
+            bin_id=bin.id,
+            quantity=store_data.quantity
+        )
+        db.add(loc)
+    
+    db.commit()
+    db.refresh(loc)
+    
+    return {
+        "id": loc.id,
+        "product_id": loc.product_id,
+        "product_name": product.chemical_name,
+        "product_code": product.product_code,
+        "bin_id": loc.bin_id,
+        "bin_name": bin.name,
+        "quantity": loc.quantity,
+        "issue_date": loc.issue_date
+    }

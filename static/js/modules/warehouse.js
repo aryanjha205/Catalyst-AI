@@ -6,7 +6,10 @@ export async function render() {
                 <h1>Warehouse & Storage Zones</h1>
                 <p>Track chemical placement, multiple zones, and stock movements.</p>
             </div>
-            <div class="header-actions">
+            <div class="header-actions" style="display:flex; gap: 10px;">
+                <button class="btn-pill" id="storeStockBtn" style="background: var(--primary-color); color: #fff; border:none;">
+                    <i class="fa-solid fa-box-open"></i> Store Product
+                </button>
                 <button class="btn-pill" id="addWarehouseBtn" style="background: var(--btn-bg); color: #fff; border:none;">
                     <i class="fa-solid fa-plus"></i> Add WH Asset
                 </button>
@@ -67,6 +70,24 @@ export async function render() {
                     </table>
                 </div>
             </div>
+        <div class="content-card" style="margin-top:20px; min-height: auto;">
+            <h3>Stock in Bins</h3>
+            <div class="table-wrapper" style="margin-top:15px;">
+                <table class="data-table" id="stockTable">
+                    <thead>
+                        <tr>
+                            <th>Product Code</th>
+                            <th>Chemical Name</th>
+                            <th>Bin / Location</th>
+                            <th>Quantity</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="text-align:center;">Loading stock...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     `;
     return container;
@@ -76,12 +97,64 @@ export async function afterRender() {
     const whTable = document.querySelector('#whTable tbody');
     const zonesTable = document.querySelector('#zonesTable tbody');
     const binsTable = document.querySelector('#binsTable tbody');
+    const stockTable = document.querySelector('#stockTable tbody');
     const btn = document.getElementById('addWarehouseBtn');
+    const storeBtn = document.getElementById('storeStockBtn');
     const dialog = document.getElementById('dialogWarehouse');
     const form = document.getElementById('formWarehouse');
+    const dialogStore = document.getElementById('dialogStoreStock');
+    const formStore = document.getElementById('formStoreStock');
 
     if (btn && dialog) {
         btn.onclick = () => dialog.showModal();
+    }
+
+    if (storeBtn && dialogStore) {
+        storeBtn.onclick = async () => {
+            // Load products and bins for dropdowns
+            try {
+                const authH = { 'Authorization': 'Bearer ' + localStorage.getItem('access_token') };
+                const resP = await fetch('/api/inventory', { headers: authH });
+                const products = await resP.json();
+                const selP = document.getElementById('store_product_id');
+                selP.innerHTML = '<option value="">Select Product...</option>' + products.map(p => `<option value="${p.id}">${p.chemical_name} (${p.product_code})</option>`).join('');
+
+                const resB = await fetch('/api/warehouse/bins', { headers: authH });
+                const bins = await resB.json();
+                const selB = document.getElementById('store_bin_id');
+                selB.innerHTML = '<option value="">Select Destination Bin...</option>' + bins.map(b => `<option value="${b.id}">${b.name} (${b.barcode})</option>`).join('');
+                
+                dialogStore.showModal();
+            } catch (err) {
+                console.error(err);
+            }
+        };
+    }
+
+    if (formStore) {
+        formStore.onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                product_id: document.getElementById('store_product_id').value,
+                bin_id: document.getElementById('store_bin_id').value,
+                quantity: parseFloat(document.getElementById('store_qty').value)
+            };
+            try {
+                const res = await fetch('/api/warehouse/store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('Failed to store stock');
+                dialogStore.close();
+                await afterRender();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
     }
 
     if (form) {
@@ -141,6 +214,17 @@ export async function afterRender() {
         const resB = await fetch('/api/warehouse/bins', { headers: authH });
         const bins = await resB.json();
         binsTable.innerHTML = bins.length ? bins.map(b => `<tr><td><strong>${b.name}</strong></td><td><code>${b.barcode}</code></td></tr>`).join('') : '<tr><td colspan="2" style="text-align:center;">No bins found.</td></tr>';
+
+        const resStock = await fetch('/api/warehouse/stock', { headers: authH });
+        const stockData = await resStock.json();
+        stockTable.innerHTML = stockData.length ? stockData.map(s => `
+            <tr>
+                <td><strong>${s.product_code}</strong></td>
+                <td>${s.product_name}</td>
+                <td><span class="status-badge status-active">${s.bin_name}</span></td>
+                <td>${s.quantity}</td>
+                <td>${new Date(s.issue_date).toLocaleDateString()}</td>
+            </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No stock stored in bins.</td></tr>';
 
     } catch (err) {
         console.error(err);

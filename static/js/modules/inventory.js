@@ -59,6 +59,7 @@ export async function afterRender() {
 
     if (addStockBtn && dialogStock) {
         addStockBtn.addEventListener('click', () => {
+            document.getElementById('stock_code').value = 'PRD-' + Math.floor(1000 + Math.random() * 9000);
             dialogStock.showModal();
         });
     }

@@ -373,6 +373,20 @@ class AIFinanceAuditResponse(BaseModel):
     flagged_entries_count: int
     suggestions: list[str]
 
+class StoreStockRequest(BaseModel):
+    product_id: str
+    bin_id: str
+    quantity: float
 
+class StockLocationResponse(BaseModel):
+    id: str
+    product_id: str
+    product_name: str
+    product_code: str
+    bin_id: str
+    bin_name: str
+    quantity: float
+    issue_date: datetime
 
-
+    class Config:
+        from_attributes = True

@@ -101,7 +101,7 @@
         <div class="modal-content">
             <h3>Add New Product / Chemical</h3>
             <form id="formStock" method="dialog">
-                <input type="text" id="stock_code" placeholder="Product Code (e.g. ETH-001)" required>
+                <input type="text" id="stock_code" placeholder="Product Code (e.g. ETH-001)" readonly style="background-color: var(--card-bg);">
                 <div style="display:flex; gap:10px; align-items:center;">
                     <input type="text" id="stock_name" placeholder="Chemical Name (e.g. Ethanol)" required style="flex:1;">
                     <button type="button" class="btn btn-primary" id="btnStockAISuggest" style="padding:10px 14px; border-radius:10px; white-space:nowrap;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Suggest</button>
@@ -209,6 +209,25 @@
                 </div>
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="dialogStoreStock">
+        <div class="modal-content">
+            <h3>Store Product in Bin</h3>
+            <form id="formStoreStock" method="dialog">
+                <select id="store_product_id" required>
+                    <option value="">Select Product...</option>
+                </select>
+                <select id="store_bin_id" required>
+                    <option value="">Select Destination Bin...</option>
+                </select>
+                <input type="number" id="store_qty" placeholder="Quantity to Store" step="any" required>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Store</button>
                     <button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button>
                 </div>
             </form>
