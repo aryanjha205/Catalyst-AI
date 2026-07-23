@@ -36,22 +36,34 @@ export async function render() {
             </div>
         </div>
 
-        <div class="content-card" style="min-height: auto;">
-            <h3>Active Formulations</h3>
-            <div class="table-wrapper" style="margin-top:15px;">
-                <table class="data-table" id="formulasTable">
-                    <thead>
-                        <tr>
-                            <th>Recipe Name</th>
-                            <th>Version</th>
-                            <th>Finished Product</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="4" style="text-align:center;">Loading formulas...</td></tr>
-                    </tbody>
-                </table>
+        <div class="grid" style="display:grid; grid-template-columns: 1.55fr 1fr; gap:20px; margin-top:24px;">
+            <div class="content-card" style="min-height: auto;">
+                <h3>Active Formulations</h3>
+                <div class="table-wrapper" style="margin-top:15px;">
+                    <table class="data-table" id="formulasTable">
+                        <thead>
+                            <tr>
+                                <th>Recipe Name</th>
+                                <th>Version</th>
+                                <th>Finished Product</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" style="text-align:center;">Loading formulas...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-card" style="min-height: auto; border: 1px dashed var(--secondary-color); background: rgba(0,200,83,0.02);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:var(--secondary-color);"><i class="fa-solid fa-microchip"></i> AI Schedule Optimizer</h3>
+                    <button class="btn-pill" id="runOptimizeBtn" style="background:var(--secondary-color); color:#fff; border:none; padding:6px 12px; font-size:12px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Optimize Schedule</button>
+                </div>
+                <div id="optimizeResult" style="font-size:0.92rem; line-height:1.5; color:var(--text-dark);">
+                    Click <strong>Optimize Schedule</strong> to calculate optimal mixing sequences and machine assignments.
+                </div>
             </div>
         </div>
     `;
@@ -61,6 +73,38 @@ export async function render() {
 export async function afterRender() {
     const formulasTable = document.querySelector('#formulasTable tbody');
     const prodOrdersTable = document.querySelector('#prodOrdersTable tbody');
+    const runOptimizeBtn = document.getElementById('runOptimizeBtn');
+
+    if (runOptimizeBtn) {
+        runOptimizeBtn.onclick = async () => {
+            const resultDiv = document.getElementById('optimizeResult');
+            resultDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading AI optimization variables...';
+            try {
+                const res = await fetch('/api/ai/optimize-production', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    }
+                });
+                if (!res.ok) throw new Error('Optimization failed');
+                const data = await res.json();
+                resultDiv.innerHTML = `
+                    <div style="background:rgba(255,255,255,0.7); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.05); margin-bottom:10px;">
+                        <span style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Mixing Sequence</span>
+                        <p style="margin:4px 0 0 0; font-size:12px; font-weight:600; color:var(--text-dark);">${data.optimal_mixing_sequence}</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.7); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.05); margin-bottom:10px;">
+                        <span style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Recommended Machine</span>
+                        <strong style="display:block; font-size:14px; color:#1e40af;">${data.suggested_machine_id}</strong>
+                    </div>
+                    <p style="font-size:12px; margin:0; color:#374151;">${data.recommendation_notes}</p>
+                    <small style="display:block; margin-top:6px; color:var(--text-muted);">Process Efficiency: ${(data.efficiency_score * 100).toFixed(0)}%</small>
+                `;
+            } catch (err) {
+                resultDiv.textContent = 'Optimize failed: ' + err.message;
+            }
+        };
+    }
 
     const addFormulaBtn = document.getElementById('addFormulaBtn');
     const dialogFormula = document.getElementById('dialogFormula');

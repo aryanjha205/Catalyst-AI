@@ -28,22 +28,34 @@ export async function render() {
             </article>
         </section>
 
-        <div class="content-card">
-            <h3>General Ledger Transactions</h3>
-            <div class="table-wrapper" style="margin-top:15px;">
-                <table class="data-table" id="finTable">
-                    <thead>
-                        <tr>
-                            <th>Transaction Date</th>
-                            <th>Account Name</th>
-                            <th>Transaction Type</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="4" style="text-align:center;">Loading ledger entries...</td></tr>
-                    </tbody>
-                </table>
+        <div class="grid" style="display:grid; grid-template-columns: 1.55fr 1fr; gap:20px; margin-top:24px;">
+            <div class="content-card" style="min-height: auto;">
+                <h3>General Ledger Transactions</h3>
+                <div class="table-wrapper" style="margin-top:15px;">
+                    <table class="data-table" id="finTable">
+                        <thead>
+                            <tr>
+                                <th>Transaction Date</th>
+                                <th>Account Name</th>
+                                <th>Transaction Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" style="text-align:center;">Loading ledger entries...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-card" style="min-height: auto; border: 1px dashed var(--secondary-color); background: rgba(0,200,83,0.02);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:var(--secondary-color);"><i class="fa-solid fa-coins"></i> AI Cost Auditor</h3>
+                    <button class="btn-pill" id="runAuditBtn" style="background:var(--secondary-color); color:#fff; border:none; padding:6px 12px; font-size:12px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Audit Ledgers</button>
+                </div>
+                <div id="auditResult" style="font-size:0.92rem; line-height:1.5; color:var(--text-dark);">
+                    Click <strong>Audit Ledgers</strong> to run AI double-entry transaction integrity auditing and expense optimization advice.
+                </div>
             </div>
         </div>
     `;
@@ -52,6 +64,35 @@ export async function render() {
 
 export async function afterRender() {
     const finTable = document.querySelector('#finTable tbody');
+    const runAuditBtn = document.getElementById('runAuditBtn');
+
+    if (runAuditBtn) {
+        runAuditBtn.onclick = async () => {
+            const auditResult = document.getElementById('auditResult');
+            auditResult.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Auditing ledger transaction balances...';
+            try {
+                const res = await fetch('/api/ai/finance-audit', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    }
+                });
+                if (!res.ok) throw new Error('Ledger audit failed');
+                const data = await res.json();
+                auditResult.innerHTML = `
+                    <div style="background:rgba(255,255,255,0.7); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.05); margin-bottom:10px;">
+                        <span style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Ledger Integrity Risk</span>
+                        <strong style="display:block; font-size:16px; color:${data.risk_score > 0.2 ? '#ca3f3f' : '#00c853'};">${(data.risk_score * 100).toFixed(0)}% Risk</strong>
+                    </div>
+                    <ul style="padding-left:16px; margin:0; font-size:12px; line-height:1.5; color:#374151;">
+                        ${data.suggestions.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                `;
+            } catch (err) {
+                auditResult.textContent = 'Audit failed: ' + err.message;
+            }
+        };
+    }
     
     const postFinBtn = document.getElementById('postFinBtn');
     const dialogFinance = document.getElementById('dialogFinance');

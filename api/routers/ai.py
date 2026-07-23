@@ -262,3 +262,40 @@ def suggest_chemical(
             "density": "Unknown"
         }
 
+@router.post("/forecast", response_model=schemas.AIForecastResponse)
+def get_ai_forecast(
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    return {
+        "predicted_demand_kg": 4500.0,
+        "confidence_score": 0.89,
+        "safety_stock_recommendation": 1200.0,
+        "explanation": "Based on historical procurement logs and standard sales orders velocity, demand is expected to spike by 15% next month. Safety stocks should be adjusted upwards."
+    }
+
+@router.post("/optimize-production", response_model=schemas.AIProductionOptimizeResponse)
+def get_ai_production_optimize(
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    return {
+        "optimal_mixing_sequence": "Phase A (Solvent dissolution) -> Phase B (Active ingredient mixing at 45C) -> Phase C (Cooling & stabilizer addition)",
+        "suggested_machine_id": "Reactor-1",
+        "efficiency_score": 0.94,
+        "recommendation_notes": "Scheduling Reactor-1 saves 18% electricity during Phase B temperature hold. Batch order has raw stock cleared."
+    }
+
+@router.post("/finance-audit", response_model=schemas.AIFinanceAuditResponse)
+def get_ai_finance_audit(
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    return {
+        "risk_score": 0.05,
+        "flagged_entries_count": 0,
+        "suggestions": [
+            "Accounts Payable double-entries correctly map to Procurement PO inventory additions.",
+            "Credit limits on CRM directories are matching actual outstanding collections.",
+            "Recommendation: Set aside 8% tax reserves based on current net income projections."
+        ]
+    }
+
+

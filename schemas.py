@@ -356,5 +356,23 @@ class ChemicalSuggestResponse(BaseModel):
     hazard_class: Optional[str] = None
     density: Optional[str] = None
 
+class AIForecastResponse(BaseModel):
+    predicted_demand_kg: float
+    confidence_score: float
+    safety_stock_recommendation: float
+    explanation: str
+
+class AIProductionOptimizeResponse(BaseModel):
+    optimal_mixing_sequence: str
+    suggested_machine_id: Optional[str] = None
+    efficiency_score: float
+    recommendation_notes: str
+
+class AIFinanceAuditResponse(BaseModel):
+    risk_score: float
+    flagged_entries_count: int
+    suggestions: list[str]
+
+
 
 

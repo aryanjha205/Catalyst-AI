@@ -30,22 +30,34 @@ export async function render() {
             </article>
         </section>
 
-        <div class="content-card">
-            <h3>Recent System Activity Audit Logs</h3>
-            <div class="table-wrapper" style="margin-top:15px;">
-                <table class="data-table" id="auditLogsTable">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Action</th>
-                            <th>Target Entity</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="4" style="text-align:center;">Loading audit logs...</td></tr>
-                    </tbody>
-                </table>
+        <div class="grid" style="display:grid; grid-template-columns: 1.5fr 1fr; gap:20px; margin-top:24px;">
+            <div class="content-card" style="min-height: auto;">
+                <h3>Recent System Activity Audit Logs</h3>
+                <div class="table-wrapper" style="margin-top:15px;">
+                    <table class="data-table" id="auditLogsTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>Target Entity</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" style="text-align:center;">Loading audit logs...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-card" style="min-height: auto; border: 1px dashed var(--secondary-color); background: rgba(0,200,83,0.02);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:var(--secondary-color);"><i class="fa-solid fa-brain"></i> AI Predictive Engine</h3>
+                    <button class="btn-pill" id="runForecastBtn" style="background:var(--secondary-color); color:#fff; border:none; padding:6px 12px; font-size:12px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Run Forecast</button>
+                </div>
+                <div id="forecastResult" style="font-size:0.92rem; line-height:1.5; color:var(--text-dark);">
+                    Click <strong>Run Forecast</strong> to calculate expected future inventory demands and safety reserves recommendations.
+                </div>
             </div>
         </div>
     `;
@@ -54,9 +66,43 @@ export async function render() {
 
 export async function afterRender() {
     const refreshBtn = document.getElementById('refreshDashboardBtn');
+    const runForecastBtn = document.getElementById('runForecastBtn');
+
     if (refreshBtn) {
         refreshBtn.onclick = () => loadDashboardData();
     }
+
+    if (runForecastBtn) {
+        runForecastBtn.onclick = async () => {
+            const forecastResult = document.getElementById('forecastResult');
+            forecastResult.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Running predictive model analytics...';
+            try {
+                const res = await fetch('/api/ai/forecast', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    }
+                });
+                if (!res.ok) throw new Error('Forecast failed');
+                const data = await res.json();
+                forecastResult.innerHTML = `
+                    <div style="background:rgba(255,255,255,0.7); padding:12px; border-radius:8px; border:1px solid rgba(0,0,0,0.05); margin-bottom:12px;">
+                        <span style="font-size:12px; color:var(--text-muted); text-transform:uppercase;">Predicted Demand</span>
+                        <strong style="display:block; font-size:20px; color:var(--secondary-color);">${data.predicted_demand_kg} kg</strong>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.7); padding:12px; border-radius:8px; border:1px solid rgba(0,0,0,0.05); margin-bottom:12px;">
+                        <span style="font-size:12px; color:var(--text-muted); text-transform:uppercase;">Safety Rec</span>
+                        <strong style="display:block; font-size:20px; color:#1e40af;">${data.safety_stock_recommendation} kg</strong>
+                    </div>
+                    <p style="font-size:13px; margin:0;">${data.explanation}</p>
+                    <small style="display:block; margin-top:8px; color:var(--text-muted);">Confidence level: ${(data.confidence_score * 100).toFixed(0)}%</small>
+                `;
+            } catch (err) {
+                forecastResult.textContent = 'Could not run forecasting: ' + err.message;
+            }
+        };
+    }
+
     await loadDashboardData();
 }
 

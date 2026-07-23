@@ -814,6 +814,7 @@ dialog::backdrop {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   background: rgba(0, 0, 0, 0.45);
   padding: 4px 6px;
