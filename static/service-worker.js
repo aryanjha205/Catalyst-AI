@@ -1,8 +1,16 @@
-const CACHE_NAME = 'chemerp-v1';
+const CACHE_NAME = 'chemerp-v2';
 const urlsToCache = [
   '/',
   '/static/css/style.css',
   '/static/js/app.js',
+  '/static/js/modules/dashboard.js',
+  '/static/js/modules/inventory.js',
+  '/static/js/modules/resource.js',
+  '/static/js/modules/production.js',
+  '/static/js/modules/lims.js',
+  '/static/js/modules/qaqc.js',
+  '/static/js/modules/sales.js',
+  '/static/js/modules/finance.js',
   '/static/manifest.json',
   '/login',
   '/register',

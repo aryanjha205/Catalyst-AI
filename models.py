@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Float, Text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Float, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
@@ -22,6 +22,7 @@ class Company(Base):
     address = Column(String)
     is_active = Column(Boolean, default=True)
     is_approved = Column(Boolean, default=False)
+    is_verified = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     users = relationship("User", back_populates="company")
@@ -31,7 +32,7 @@ class User(Base):
     
     id = Column(String, primary_key=True, default=generate_uuid)
     company_id = Column(String, ForeignKey("companies.id"), nullable=False, index=True)
-    email = Column(String, unique=True, index=True)
+    email = Column(String, index=True, nullable=False)
     hashed_password = Column(String)
     full_name = Column(String)
     role = Column(String)
@@ -39,6 +40,20 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     company = relationship("Company", back_populates="users")
+
+    __table_args__ = (UniqueConstraint("company_id", "email", name="uq_user_company_email"),)
+
+class EmailVerification(Base):
+    __tablename__ = "email_verifications"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    email = Column(String, nullable=False, index=True)
+    otp_hash = Column(String, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    attempts = Column(Integer, default=0, nullable=False)
+    last_sent_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    payload = Column(Text, nullable=False)
+    verified_at = Column(DateTime, nullable=True)
 
 # 1. Chemical Inventory (Products & Raw Materials)
 class Product(Base):

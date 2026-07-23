@@ -5,6 +5,7 @@ from database import get_db
 import models
 import auth
 from pydantic import BaseModel
+import schemas
 
 router = APIRouter(
     prefix="/api/warehouse",
@@ -34,16 +35,14 @@ def get_warehouses(
 
 @router.post("/", response_model=WarehouseResponse)
 def create_warehouse(
-    warehouse_data: dict,
+    warehouse_data: schemas.WarehouseCreate,
     db: Session = Depends(get_db), 
     current_user: models.User = Depends(auth.get_current_user)
 ):
     # TENANT ISOLATION
     new_warehouse = models.Warehouse(
         company_id=current_user.company_id,
-        name=warehouse_data.get("name", "Main Warehouse"),
-        location=warehouse_data.get("location", ""),
-        capacity=warehouse_data.get("capacity", 0.0),
+        **warehouse_data.model_dump(),
     )
     db.add(new_warehouse)
     db.commit()

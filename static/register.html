@@ -82,7 +82,14 @@
                     <textarea id="address" rows="3" required></textarea>
                 </div>
             </div>
-            <button type="submit" class="btn">Register Company</button>
+            <button type="submit" class="btn">Send verification code</button>
+        </form>
+        <form id="verifyForm" style="display:none; margin-top:16px;">
+            <div class="form-group full">
+                <label>6-digit verification code</label>
+                <input type="text" id="otp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" required>
+            </div>
+            <button type="submit" class="btn">Verify and create workspace</button>
         </form>
         <div class="auth-links">
             <p>Already registered? <a href="/login">Login Here</a></p>
@@ -105,14 +112,15 @@
             };
 
             try {
-                const response = await fetch('/api/register', {
+                const response = await fetch('/api/register/request', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 if (response.ok) {
-                    alert('Registration Successful! Please login.');
-                    window.location.href = '/login';
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('verifyForm').style.display = 'block';
+                    alert('A verification code was sent to your business email.');
                 } else {
                     const error = await response.json();
                     alert('Error: ' + error.detail);
@@ -120,6 +128,21 @@
             } catch (error) {
                 console.error(error);
                 alert('Registration failed');
+            }
+        });
+
+        document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/api/register/verify', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: document.getElementById('email').value, otp: document.getElementById('otp').value })
+            });
+            if (response.ok) {
+                alert('Workspace created successfully. You can now sign in.');
+                window.location.href = '/login';
+            } else {
+                const error = await response.json();
+                alert('Error: ' + (error.detail || 'Verification failed'));
             }
         });
     </script>
