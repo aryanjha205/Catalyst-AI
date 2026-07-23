@@ -241,6 +241,9 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 @app.post("/api/platform/login", response_model=schemas.Token)
 def platform_pin_login(payload: schemas.PlatformPinLogin, db: Session = Depends(get_db)):
     """PIN access is isolated to the platform dashboard and rate-limited per process."""
+    # Covers serverless invocations or test clients that skip the ASGI lifespan hook.
+    if not initialize_database():
+        raise HTTPException(status_code=503, detail="Database is temporarily unavailable")
     pin = os.getenv("SUPER_ADMIN_PIN")
     if not pin:
         raise HTTPException(status_code=503, detail="Platform PIN login is not configured")
