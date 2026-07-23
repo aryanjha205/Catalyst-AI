@@ -8,6 +8,7 @@ import json
 import logging
 import secrets
 from datetime import datetime, timedelta
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from database import engine, Base, get_db, SessionLocal
@@ -18,11 +19,22 @@ import auth
 # Import newly created routers
 from api.routers import inventory, warehouse, production, lims, quality, sales, procurement, finance, ai, admin, platform
 
-# Create db tables if they don't exist yet
-Base.metadata.create_all(bind=engine)
-
 logger = logging.getLogger("chemerp")
 platform_pin_attempts: dict[str, list[datetime]] = {}
+
+def initialize_database() -> bool:
+    """Create new tables and bring the original starter schema forward safely."""
+    try:
+        Base.metadata.create_all(bind=engine)
+        # create_all does not add columns to existing Neon tables. PostgreSQL supports this idempotent migration.
+        if engine.dialect.name == "postgresql":
+            with engine.begin() as connection:
+                connection.execute(text("ALTER TABLE companies ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE"))
+        return True
+    except Exception:
+        # Do not make the ASGI application unavailable merely because Neon is temporarily unreachable.
+        logger.exception("Database initialization failed")
+        return False
 app = FastAPI(title="ChemERP API", version="1.0.0")
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=os.getenv("ALLOWED_HOSTS", "*").split(","))
 
@@ -85,6 +97,10 @@ async def read_super_admin():
     with open(os.path.join(static_dir, "super_admin.html"), "r", encoding="utf-8") as file:
         return HTMLResponse(content=file.read())
 
+@app.get("/super_admin", response_class=HTMLResponse, include_in_schema=False)
+async def read_super_admin_legacy():
+    return await read_super_admin()
+
 def ensure_platform_admin(db: Session) -> models.User | None:
     """Create the internal platform account used solely to issue protected admin tokens."""
     pin = os.getenv("SUPER_ADMIN_PIN")
@@ -109,9 +125,13 @@ def ensure_platform_admin(db: Session) -> models.User | None:
 
 @app.on_event("startup")
 def provision_platform_admin() -> None:
+    if not initialize_database():
+        return
     db = SessionLocal()
     try:
         ensure_platform_admin(db)
+    except Exception:
+        logger.exception("Platform administrator provisioning failed")
     finally:
         db.close()
 
