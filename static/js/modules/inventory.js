@@ -1,4 +1,5 @@
 let selectedChemical = "Ethanol";
+let selectedPrice = "0.00";
 let activeDrumIndex = 0; // 0: Flammable, 1: Toxic, 2: Safe
 
 export async function render() {
@@ -32,12 +33,13 @@ export async function render() {
                             <th>Chemical Name</th>
                             <th>CAS Number</th>
                             <th>Current Stock (kg/L)</th>
+                            <th>Price (₹)</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="5" style="text-align:center;">Loading inventory...</td>
+                            <td colspan="6" style="text-align:center;">Loading inventory...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -115,7 +117,9 @@ export async function afterRender() {
                 current_stock: parseFloat(document.getElementById('stock_qty').value || 0),
                 safety_stock: parseFloat(document.getElementById('stock_safety').value || 0),
                 reorder_level: parseFloat(document.getElementById('stock_reorder').value || 0),
-                hazard_class: document.getElementById('stock_hazard').value || null
+                hazard_class: document.getElementById('stock_hazard').value || null,
+                purchase_price: parseFloat(document.getElementById('stock_purchase_price')?.value || 0),
+                selling_price: parseFloat(document.getElementById('stock_selling_price')?.value || 0)
             };
 
             try {
@@ -142,7 +146,7 @@ export async function afterRender() {
             const labelEl = document.getElementById(`label-drum-${i}`);
             const drumEl = document.getElementById(`drum-${i}`);
             if (i === activeDrumIndex) {
-                labelEl.textContent = selectedChemical;
+                labelEl.textContent = `${selectedChemical} - ₹${selectedPrice}`;
                 drumEl.classList.add('selected');
             } else {
                 labelEl.textContent = "No Chemical Projected";
@@ -162,6 +166,14 @@ export async function afterRender() {
     if (stockNameInput) {
         stockNameInput.addEventListener('input', (e) => {
             selectedChemical = e.target.value || "No Name";
+            updateDrumLabels();
+        });
+    }
+
+    const stockPriceInput = document.getElementById('stock_selling_price');
+    if (stockPriceInput) {
+        stockPriceInput.addEventListener('input', (e) => {
+            selectedPrice = e.target.value || "0.00";
             updateDrumLabels();
         });
     }
@@ -187,17 +199,19 @@ export async function afterRender() {
         const data = await res.json();
         
         if(data.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No inventory items found. Add some to get started.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inventory items found. Add some to get started.</td></tr>';
             selectedChemical = "None Active";
+            selectedPrice = "0.00";
             updateDrumLabels();
             return;
         }
 
         selectedChemical = data[0].chemical_name;
+        selectedPrice = data[0].selling_price || "0.00";
         updateDrumLabels();
 
         tableBody.innerHTML = data.map(item => `
-            <tr style="cursor:pointer;" class="inventory-row" data-name="${item.chemical_name}">
+            <tr style="cursor:pointer;" class="inventory-row" data-name="${item.chemical_name}" data-price="${item.selling_price || 0}">
                 <td><strong>${item.product_code}</strong></td>
                 <td>${item.chemical_name}</td>
                 <td><span style="background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px; font-family: monospace;">${item.cas_number || 'N/A'}</span></td>
@@ -209,6 +223,7 @@ export async function afterRender() {
                         <span style="font-weight:600; min-width: 50px;">${item.current_stock}</span>
                     </div>
                 </td>
+                <td><strong>₹${(item.selling_price || 0).toFixed(2)}</strong></td>
                 <td><button class="action-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
             </tr>
         `).join('');
@@ -216,13 +231,14 @@ export async function afterRender() {
         document.querySelectorAll('.inventory-row').forEach(row => {
             row.onclick = () => {
                 selectedChemical = row.getAttribute('data-name');
+                selectedPrice = row.getAttribute('data-price');
                 updateDrumLabels();
             };
         });
 
     } catch (err) {
         console.error(err);
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #ef4444;">Error loading inventory. Please try again.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ef4444;">Error loading inventory. Please try again.</td></tr>';
     }
 }
 
