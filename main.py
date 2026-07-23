@@ -7,7 +7,9 @@ import os
 import json
 import logging
 import secrets
+import smtplib
 from datetime import datetime, timedelta
+from email.message import EmailMessage
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -101,6 +103,10 @@ async def read_super_admin():
 async def read_super_admin_legacy():
     return await read_super_admin()
 
+@app.get("/admin", response_class=HTMLResponse, include_in_schema=False)
+async def read_super_admin_shortcut():
+    return await read_super_admin()
+
 def ensure_platform_admin(db: Session) -> models.User | None:
     """Create the internal platform account used solely to issue protected admin tokens."""
     pin = os.getenv("SUPER_ADMIN_PIN")
@@ -136,23 +142,41 @@ def provision_platform_admin() -> None:
         db.close()
 
 def _send_otp(email: str, otp: str) -> None:
-    """Use the configured internal notification service; never expose OTPs in responses."""
+    """Deliver OTP by an internal service or SMTP; never expose OTPs in API responses."""
     service_url = os.getenv("OTP_SERVICE_URL")
-    if not service_url:
-        logger.warning("OTP service is not configured; verification email for %s was not delivered", email)
-        return
-    # Deliberately delegated to the organization notification service to keep mail credentials out of the app.
-    import urllib.request
-    request = urllib.request.Request(
-        service_url,
-        data=json.dumps({"email": email, "otp": otp}).encode(),
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
+    if service_url:
+        try:
+            import urllib.request
+            request = urllib.request.Request(service_url, data=json.dumps({"email": email, "otp": otp}).encode(), headers={"Content-Type": "application/json"}, method="POST")
+            urllib.request.urlopen(request, timeout=8).close()
+            return
+        except OSError:
+            logger.exception("OTP notification service failed; attempting SMTP fallback")
+
+    host = os.getenv("SMTP_HOST")
+    username = os.getenv("SMTP_USERNAME")
+    password = os.getenv("SMTP_PASSWORD")
+    if not all((host, username, password)):
+        raise HTTPException(status_code=503, detail="Email verification is not configured. Contact the administrator.")
+    message = EmailMessage()
+    message["Subject"] = "Your ChemERP verification code"
+    message["From"] = os.getenv("SMTP_FROM", username)
+    message["To"] = email
+    message.set_content(f"Your ChemERP verification code is {otp}. It expires in 5 minutes. Do not share this code.")
     try:
-        urllib.request.urlopen(request, timeout=5).close()
-    except OSError:
-        logger.exception("Could not deliver OTP email")
+        port = int(os.getenv("SMTP_PORT", "465"))
+        if port == 465:
+            with smtplib.SMTP_SSL(host, port, timeout=15) as client:
+                client.login(username, password)
+                client.send_message(message)
+        else:
+            with smtplib.SMTP(host, port, timeout=15) as client:
+                client.starttls()
+                client.login(username, password)
+                client.send_message(message)
+    except (OSError, smtplib.SMTPException):
+        logger.exception("SMTP OTP delivery failed")
+        raise HTTPException(status_code=503, detail="Could not send the verification email. Try again later.")
 
 def _create_verification(payload: schemas.RegistrationRequest, db: Session) -> None:
     existing = db.query(models.Company).filter(models.Company.email == payload.email).first()
@@ -173,7 +197,12 @@ def _create_verification(payload: schemas.RegistrationRequest, db: Session) -> N
     )
     db.add(verification)
     db.commit()
-    _send_otp(payload.email, otp)
+    try:
+        _send_otp(payload.email, otp)
+    except HTTPException:
+        db.delete(verification)
+        db.commit()
+        raise
 
 @app.post("/api/register/request", status_code=status.HTTP_202_ACCEPTED)
 def request_registration(payload: schemas.RegistrationRequest, db: Session = Depends(get_db)):
