@@ -1,16 +1,46 @@
 export async function render() {
     const container = document.createElement('div');
     container.innerHTML = `
-        <div class="page-header">
+        <div class="page-header" style="margin-bottom: 24px;">
             <div class="page-title">
-                <h1>General Ledger & Financial Accounting</h1>
+                <h1>General Ledger & Finance</h1>
                 <p>Track Double-entry bookkeeping ledger transactions, debits, credits, and net balances.</p>
             </div>
             <div class="header-actions">
-                <button class="btn-pill" id="postFinBtn" style="background:var(--btn-bg); color:#fff; border:none;">
+                <button class="btn-pill" id="postFinBtn" style="background:var(--btn-bg); color:#fff; border:none; box-shadow: 0 4px 10px rgba(0,230,118,0.2);">
                     <i class="fa-solid fa-file-invoice-dollar"></i> Post Journal Entry
                 </button>
             </div>
+        </div>
+
+        <div class="hero-section" style="display:flex; align-items:center; justify-content:space-between; background: linear-gradient(135deg, #166534 0%, #22c55e 100%); border-radius: 20px; padding: 30px 40px; color: #fff; margin-bottom: 30px; box-shadow: 0 15px 30px rgba(34, 197, 94, 0.2); position: relative; overflow: hidden;">
+            <div style="flex: 1; z-index: 2;">
+                <h2 style="font-size: 2.2rem; margin-bottom: 15px; font-weight: 700;">Financial Intelligence</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 25px; max-width: 600px; line-height: 1.6;">
+                    Gain crystal-clear visibility into company finances. Monitor net income, analyze cash flow, and ensure compliance.
+                </p>
+            </div>
+            
+            <div style="flex: 0 0 300px; text-align: right; z-index: 2; position: relative;">
+                <svg width="250" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 15px 20px rgba(0,0,0,0.2)); transform: scale(1.2) translateY(-10px) translateX(-10px);">
+                    <path fill="rgba(255,255,255,0.1)" d="M50,-60C65,-45,75,-25,75,-5C75,15,65,35,50,50C35,65,15,75,-5,75C-25,75,-45,65,-60,50C-75,35,-85,15,-85,-5C-85,-25,-75,-45,-60,-60C-45,-75,-25,-85,-5,-85C15,-85,35,-75,50,-60Z" transform="translate(100 100)" />
+                    <!-- Body Suit -->
+                    <path d="M60,190 C60,140 140,140 140,190 Z" fill="#047857" />
+                    <!-- Shirt/Tie -->
+                    <path d="M90,140 L100,165 L110,140 Z" fill="#FFFFFF" />
+                    <path d="M98,140 L100,160 L102,140 Z" fill="#FACC15" />
+                    <circle cx="100" cy="110" r="28" fill="#FDBA74" />
+                    <!-- Hair -->
+                    <path d="M72,105 C72,70 128,70 128,105 C128,95 72,95 72,105 Z" fill="#1E293B" />
+                    <!-- Calculator/Phone -->
+                    <rect x="135" y="130" width="20" height="30" rx="3" fill="#1E293B" transform="rotate(15 135 130)" />
+                    <rect x="138" y="133" width="14" height="10" fill="#34D399" transform="rotate(15 135 130)" />
+                    <!-- Graph behind -->
+                    <path d="M10,130 Q40,160 60,120 T100,100" fill="none" stroke="#FDE047" stroke-width="4" stroke-dasharray="5,5" />
+                    <circle cx="100" cy="100" r="5" fill="#FDE047" />
+                </svg>
+            </div>
+            <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; z-index: 1;"></div>
         </div>
 
         <section class="grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; margin-bottom:24px;">

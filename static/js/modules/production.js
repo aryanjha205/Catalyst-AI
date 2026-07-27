@@ -1,19 +1,45 @@
 export async function render() {
     const container = document.createElement('div');
     container.innerHTML = `
-        <div class="page-header">
+        <div class="page-header" style="margin-bottom: 24px;">
             <div class="page-title">
                 <h1>Production & Recipe Master</h1>
                 <p>Manage formulation percentages, versioning, mixing sequences, and batch runs.</p>
             </div>
             <div class="header-actions">
-                <button class="btn-pill" id="addFormulaBtn" style="background: #ffffff; color: var(--text-dark); border:1px solid var(--border-color);">
+                <button class="btn-pill" id="addFormulaBtn" style="background: #ffffff; color: var(--text-dark); border:1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
                     <i class="fa-solid fa-flask"></i> Create Recipe
                 </button>
-                <button class="btn-pill" id="scheduleBatchBtn" style="background: var(--btn-bg); color: #fff; border:none;">
+                <button class="btn-pill" id="scheduleBatchBtn" style="background: var(--btn-bg); color: #fff; border:none; box-shadow: 0 4px 10px rgba(0,230,118,0.2);">
                     <i class="fa-solid fa-circle-play"></i> Schedule Batch
                 </button>
             </div>
+        </div>
+
+        <div class="hero-section" style="display:flex; align-items:center; justify-content:space-between; background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%); border-radius: 20px; padding: 30px 40px; color: #fff; margin-bottom: 30px; box-shadow: 0 15px 30px rgba(99, 102, 241, 0.2); position: relative; overflow: hidden;">
+            <div style="flex: 1; z-index: 2;">
+                <h2 style="font-size: 2.2rem; margin-bottom: 15px; font-weight: 700;">Precision Batch Mixing</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 25px; max-width: 600px; line-height: 1.6;">
+                    Control every phase of production. Enforce formula consistency and track mixing temperatures in real-time.
+                </p>
+            </div>
+            
+            <div style="flex: 0 0 300px; text-align: right; z-index: 2; position: relative;">
+                <svg width="250" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 15px 20px rgba(0,0,0,0.2)); transform: scale(1.2) translateY(-10px) translateX(-10px);">
+                    <path fill="rgba(255,255,255,0.1)" d="M47.7,-64.4C60.2,-52.7,67.6,-34.5,70.9,-16.4C74.3,1.7,73.5,19.6,65.3,34.2C57.1,48.8,41.4,60.1,24.1,65.9C6.8,71.7,-12,72,-28.9,65.4C-45.7,58.8,-60.7,45.3,-68.8,28.8C-76.9,12.3,-78.1,-7.2,-71.4,-23.1C-64.7,-39,-50.1,-51.4,-35.1,-62C-20,-72.6,-4.5,-81.4,6.7,-78.1C17.9,-74.8,35.2,-76.1,47.7,-64.4Z" transform="translate(100 100)" />
+                    <path d="M70,190 C70,140 130,140 130,190 Z" fill="#F8FAFC" />
+                    <!-- Apron -->
+                    <path d="M85,140 L115,140 L120,190 L80,190 Z" fill="#1E40AF" opacity="0.9" />
+                    <circle cx="100" cy="110" r="28" fill="#FDBA74" />
+                    <!-- Goggles -->
+                    <rect x="75" y="100" width="50" height="15" rx="5" fill="#38BDF8" opacity="0.6" stroke="#0EA5E9" stroke-width="2" />
+                    <path d="M72,85 C72,60 128,60 128,85 C128,95 72,95 72,85 Z" fill="#1E293B" />
+                    <!-- Flask -->
+                    <path d="M140,130 L150,130 L160,160 C165,170 150,175 145,175 C140,175 125,170 130,160 Z" fill="#10B981" opacity="0.8" />
+                    <path d="M145,130 L145,115 M145,115 L140,115 M145,115 L150,115" stroke="#CBD5E1" stroke-width="3" />
+                </svg>
+            </div>
+            <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; z-index: 1;"></div>
         </div>
 
         <div class="content-card" style="min-height: auto; margin-bottom: 24px;">

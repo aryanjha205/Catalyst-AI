@@ -385,6 +385,24 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@media (max-width: 1024px) {
+  .hero-section {
+    flex-direction: column !important;
+    text-align: center;
+    padding: 30px 20px !important;
+  }
+  .hero-section > div:first-child {
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  .hero-section > div:nth-child(2) {
+    margin-top: -30px;
+  }
+  .hero-section svg {
+    transform: scale(0.9) translateY(0) translateX(0) !important;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -414,6 +432,13 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+  }
+  .hero-section svg {
+    transform: scale(0.7) translateY(-20px) translateX(0) !important;
+    margin-bottom: -50px;
+  }
+  .grid {
+    grid-template-columns: 1fr !important;
   }
 }
 

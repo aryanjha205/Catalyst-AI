@@ -1,19 +1,46 @@
 export async function render() {
     const container = document.createElement('div');
     container.innerHTML = `
-        <div class="page-header">
+        <div class="page-header" style="margin-bottom: 24px;">
             <div class="page-title">
                 <h1>Warehouse & Storage Zones</h1>
                 <p>Track chemical placement, multiple zones, and stock movements.</p>
             </div>
             <div class="header-actions" style="display:flex; gap: 10px;">
-                <button class="btn-pill" id="storeStockBtn" style="background: var(--primary-color); color: #fff; border:none;">
+                <button class="btn-pill" id="storeStockBtn" style="background: var(--primary-color); color: #fff; border:none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                     <i class="fa-solid fa-box-open"></i> Store Product
                 </button>
-                <button class="btn-pill" id="addWarehouseBtn" style="background: var(--btn-bg); color: #fff; border:none;">
+                <button class="btn-pill" id="addWarehouseBtn" style="background: var(--btn-bg); color: #fff; border:none; box-shadow: 0 4px 10px rgba(0,230,118,0.2);">
                     <i class="fa-solid fa-plus"></i> Add WH Asset
                 </button>
             </div>
+        </div>
+
+        <div class="hero-section" style="display:flex; align-items:center; justify-content:space-between; background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%); border-radius: 20px; padding: 30px 40px; color: #fff; margin-bottom: 30px; box-shadow: 0 15px 30px rgba(245, 158, 11, 0.2); position: relative; overflow: hidden;">
+            <div style="flex: 1; z-index: 2;">
+                <h2 style="font-size: 2.2rem; margin-bottom: 15px; font-weight: 700;">Global Warehouse Map</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 25px; max-width: 600px; line-height: 1.6;">
+                    Optimize your storage layout. Manage bins, zones, and securely position flammable or toxic containers.
+                </p>
+            </div>
+            
+            <div style="flex: 0 0 300px; text-align: right; z-index: 2; position: relative;">
+                <svg width="250" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 15px 20px rgba(0,0,0,0.2)); transform: scale(1.2) translateY(-10px) translateX(-10px);">
+                    <path fill="rgba(255,255,255,0.1)" d="M41,-52.1C55.2,-40.8,70,-28.9,74.9,-13.4C79.8,2.1,74.8,21.3,64.2,37.3C53.7,53.2,37.5,65.9,19.3,71.2C1.1,76.5,-19,74.3,-35.1,65.2C-51.1,56.1,-63,40.1,-67.2,22.6C-71.4,5.2,-67.9,-13.7,-58.1,-27.7C-48.3,-41.7,-32.1,-50.8,-17.1,-52.9C-2.1,-55,13.1,-50.2,26.9,-63.5Z" transform="translate(100 100)" />
+                    <path d="M70,190 C70,140 130,140 130,190 Z" fill="#FDE68A" />
+                    <!-- Safety Vest -->
+                    <path d="M85,140 L115,140 L125,190 L75,190 Z" fill="#D97706" opacity="0.8" />
+                    <circle cx="100" cy="110" r="28" fill="#FDBA74" />
+                    <!-- Hard Hat -->
+                    <path d="M68,110 C68,80 132,80 132,110" fill="#FBBF24" />
+                    <path d="M60,110 L140,110" stroke="#FBBF24" stroke-width="6" stroke-linecap="round" />
+                    <!-- Box -->
+                    <rect x="135" y="140" width="30" height="30" fill="#8B5CF6" transform="rotate(15 135 140)" />
+                    <line x1="135" y1="155" x2="165" y2="155" stroke="#7C3AED" stroke-width="2" transform="rotate(15 135 140)" />
+                    <path d="M90,105 C90,105 100,100 110,105" stroke="#1E293B" stroke-width="2" fill="none" />
+                </svg>
+            </div>
+            <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; z-index: 1;"></div>
         </div>
 
         <div class="content-card" style="min-height: auto; margin-bottom: 24px;">
